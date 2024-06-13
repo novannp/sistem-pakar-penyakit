@@ -4,10 +4,10 @@
     </x-slot>
 
     <x-auth-card>
-    
+
         {{-- show alert if there is errors --}}
         <x-alert-error/>
-        
+
         <x-slot name="title">
             Login
         </x-slot>
@@ -19,7 +19,7 @@
 
             <!-- Password field -->
             <x-input type="password" text="Password" name="password" />
-            
+
             <x-button type="primary btn-block" text="Login" for="submit" />
         </form>
         <div class="mt-4 text-center">

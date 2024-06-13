@@ -27,12 +27,18 @@ class DashboardController extends Controller
     public function index()
     {
         $logs = Activity::where('causer_id', auth()->id())->latest()->paginate(5);
+        // fix this
+
         $riwayat = Riwayat::select(
             DB::raw("COUNT(id) as total"),
-            DB::raw("DATE_FORMAT(created_at, '%d %M') as days")
+            DB::raw("DATE_FORMAT(created_at, '%d %M') as days"),
+            DB::raw("MIN(created_at) as first_created_at") // Add this line
         )
         ->where('created_at', '>=', Carbon::now()->subDays(7))
-        ->groupBy('days')->orderBy('created_at', 'asc')->get();
+        ->groupBy('days')
+        ->orderBy('first_created_at', 'asc') // Change to order by the aggregated created_at
+        ->get();
+
 
         return view('admin.dashboard', compact('logs', 'riwayat'));
     }
@@ -100,7 +106,7 @@ class DashboardController extends Controller
             }
 
             $data['password'] = Hash::make($request->new_password);
-        } 
+        }
 
         // for update avatar
         if($request->avatar) {
@@ -110,10 +116,10 @@ class DashboardController extends Controller
                 unlink(storage_path('app/public/'.auth()->user()->avatar));
             }
         }
-        
+
         // update profile
         auth()->user()->update($data);
-        
+
         return redirect()->back()->with('success', 'Profile updated!');
     }
 
@@ -139,6 +145,6 @@ class DashboardController extends Controller
         }
 
         return '';
-        
+
     }
 }
